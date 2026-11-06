@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Barlow Condensed", sans-serif;
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --color-chalk: #E8E7E2;
+  --color-carbon: #151515;
+  --color-concrete: #898985;
+  --color-steel: #B8BBB7;
+  --color-signal: #D6FF3F;
+  --color-rust: #8D4936;
+}
+
+@layer base {
+  html {
+    background-color: #E8E7E2;
+    color: #151515;
+    font-family: var(--font-sans);
+  }
+}

@@ -1,0 +1,56 @@
+brand:
+  name: "HORS CHAMP"
+  tagline: "Des vêtements essentiels, construits pour vivre dehors."
+  territory:
+    - "sobriété parisienne"
+    - "volume contemporain"
+    - "imperfection assumée"
+    - "protection technique"
+    - "nostalgie sportswear"
+
+drop:
+  name: "Drop 01 — Outside System"
+  status: "Collection de démonstration"
+  launch_date: "Date à confirmer"
+  primary_cta:
+    label: "Accéder au drop"
+    href: "#access"
+  secondary_cta:
+    label: "Découvrir la collection"
+    href: "#collection"
+
+manifesto:
+  title: "Pas une saison. Un système."
+  text: "Des pièces simples, pensées pour les déplacements, les couches et les usages quotidiens."
+
+products:
+  - name: "Field Hoodie"
+    description: "Hoodie oversize en coton lourd, lavé et structuré."
+    status: "Produit de démonstration"
+  - name: "Layer Shell"
+    description: "Une couche légère pensée pour protéger sans alourdir."
+    status: "Produit de démonstration"
+  - name: "Archive Tee"
+    description: "Un t-shirt ample, marqué par un imprimé discret."
+    status: "Produit de démonstration"
+  - name: "Signal Cap"
+    description: "Une casquette souple avec un détail réfléchissant."
+    status: "Produit de démonstration"
+
+access:
+  title: "Le drop arrive bientôt."
+  text: "Inscris-toi pour recevoir l'accès anticipé et les informations de lancement."
+  input_label: "Ton adresse email"
+  button_label: "Rejoindre la liste"
+  confirmation_message: "Merci. Tu recevras les prochaines informations du drop."
+  backend_required: false
+
+footer:
+  links:
+    - "Collection"
+    - "Manifeste"
+    - "Contact"
+    - "Instagram"
+  legal:
+    - "Mentions légales"
+    - "Politique de confidentialité"

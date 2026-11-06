@@ -1,0 +1,6 @@
+{
+  "name": "HORS CHAMP — Drop 01",
+  "description": "Des vêtements essentiels, construits pour vivre dehors. Drop 01 — Outside System.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
