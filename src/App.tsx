@@ -1,12 +1,14 @@
-import { useState, type FormEvent } from 'react';
-import { ArrowUpRight, Check, Menu, X } from 'lucide-react';
-import { MotionConfig, motion, useScroll, useSpring } from 'motion/react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { ArrowUpRight, Check, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react';
+import { AnimatePresence, MotionConfig, motion, useScroll, useSpring } from 'motion/react';
 import {
   DROP_CONTENT,
   type ProductItem,
 } from './data/content';
 import { EditorialImage } from './components/EditorialImage';
 import { ConstructionInspector } from './components/ConstructionInspector';
+import { ContinuousLookbookCarousel } from './components/ContinuousLookbookCarousel';
+import { ViewfinderCursor } from './components/ViewfinderCursor';
 
 type LookbookFilter = 'all' | 'couche' | 'volume' | 'base';
 type ProductFilter = 'all' | 'hauts' | 'accessoires';
@@ -29,12 +31,73 @@ export default function App() {
   // Footer info modal state
   const [infoModal, setInfoModal] = useState<InfoModalType>(null);
 
+  // Lookbook carousel index
+  const [lookbookIndex, setLookbookIndex] = useState(0);
+
+  // Active section tracker for sticky sub-bar
+  const [activeSection, setActiveSection] = useState<{
+    id: string;
+    index: string;
+    title: string;
+    subtitle: string;
+    theme: 'chalk' | 'dark';
+  } | null>(null);
+
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 280,
     damping: 32,
     restDelta: 0.001,
   });
+
+  useEffect(() => {
+    const sections: Array<{
+      id: string;
+      index: string;
+      title: string;
+      subtitle: string;
+      theme: 'chalk' | 'dark';
+    }> = [
+      { id: 'manifeste', index: '01', title: 'Manifeste', subtitle: 'Pas une saison. Un système.', theme: 'chalk' },
+      { id: 'lookbook', index: '02', title: 'Lookbook', subtitle: 'Silhouettes en situation', theme: 'chalk' },
+      { id: 'collection', index: '03', title: 'Collection', subtitle: 'Drop 01 — Outside System', theme: 'chalk' },
+      { id: 'construction', index: '04', title: 'Construction & Volumes', subtitle: 'Architecture du système', theme: 'dark' },
+      { id: 'access', index: '05', title: 'Accès anticipé', subtitle: 'Le drop arrive bientôt.', theme: 'chalk' },
+    ];
+
+    let ticking = false;
+
+    const updateActiveSection = () => {
+      const scrollY = window.scrollY;
+      // Header height is ~64px. Reveal sticky bar once we scroll into content past hero (~500px)
+      const threshold = scrollY + 110;
+      let current: typeof activeSection = null;
+
+      for (const sec of sections) {
+        const el = document.getElementById(sec.id);
+        if (el) {
+          const top = el.offsetTop;
+          if (top <= threshold) {
+            current = sec;
+          }
+        }
+      }
+
+      setActiveSection(current);
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateActiveSection);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    updateActiveSection();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const filteredLookbook =
     lookbookFilter === 'all'
@@ -53,13 +116,28 @@ export default function App() {
     }
   };
 
+  const scrollToSection = (sectionId: string) => {
+    setMobileMenuOpen(false);
+    if (sectionId === 'top') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    const el = document.getElementById(sectionId);
+    if (el) {
+      // 64px (header) + 38px (sticky context bar) = 102px
+      const headerOffset = 102;
+      const elementTop = el.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({
+        top: Math.max(0, elementTop - headerOffset),
+        behavior: 'smooth',
+      });
+    }
+  };
+
   const handleNotifyForPiece = (pieceName: string) => {
     setPreferredPiece(pieceName);
     setSelectedProduct(null);
-    const accessEl = document.getElementById('access');
-    if (accessEl) {
-      accessEl.scrollIntoView({ behavior: 'smooth' });
-    }
+    scrollToSection('access');
   };
 
   const handleAccessSubmit = (e: FormEvent) => {
@@ -77,6 +155,7 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <div className="min-h-screen bg-[#E8E7E2] text-[#151515] flex flex-col">
+        <ViewfinderCursor />
       {/* 1. Announcement Bar (static at top so mobile sticky height stays minimal) */}
       <div className="bg-[#151515] text-[#E8E7E2] border-b border-[#2B2B28]">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-2 flex flex-wrap items-center justify-between gap-2 text-xs font-mono tracking-wide">
@@ -95,6 +174,10 @@ export default function App() {
           {/* Zone 1: Single-line Brand Wordmark */}
           <a
             href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection('top');
+            }}
             className="font-display text-2xl font-bold tracking-tight uppercase text-[#151515] whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#151515]"
           >
             {DROP_CONTENT.brand.name}
@@ -107,24 +190,40 @@ export default function App() {
           >
             <a
               href="#manifeste"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('manifeste');
+              }}
               className="hover:text-[#8D4936] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#151515]"
             >
               Manifeste
             </a>
             <a
               href="#lookbook"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('lookbook');
+              }}
               className="hover:text-[#8D4936] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#151515]"
             >
               Lookbook
             </a>
             <a
               href="#collection"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('collection');
+              }}
               className="hover:text-[#8D4936] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#151515]"
             >
               Collection
             </a>
             <a
               href="#construction"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('construction');
+              }}
               className="hover:text-[#8D4936] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#151515]"
             >
               Construction
@@ -135,6 +234,10 @@ export default function App() {
           <div className="flex items-center gap-3 shrink-0">
             <a
               href={DROP_CONTENT.drop.primaryCta.href}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('access');
+              }}
               className="px-4 py-2 text-xs font-mono uppercase tracking-wider bg-[#151515] text-[#E8E7E2] hover:bg-[#D6FF3F] hover:text-[#151515] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#151515]"
             >
               {DROP_CONTENT.drop.primaryCta.label}
@@ -159,28 +262,40 @@ export default function App() {
           >
             <a
               href="#manifeste"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('manifeste');
+              }}
               className="py-2 border-b border-[#B8BBB7]/50 text-[#151515]"
             >
               Manifeste
             </a>
             <a
               href="#lookbook"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('lookbook');
+              }}
               className="py-2 border-b border-[#B8BBB7]/50 text-[#151515]"
             >
               Lookbook
             </a>
             <a
               href="#collection"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('collection');
+              }}
               className="py-2 border-b border-[#B8BBB7]/50 text-[#151515]"
             >
               Collection
             </a>
             <a
               href="#construction"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('construction');
+              }}
               className="py-2 text-[#151515]"
             >
               Construction
@@ -195,6 +310,78 @@ export default function App() {
           style={{ scaleX: smoothProgress }}
         />
       </header>
+
+      {/* Sticky Section Context Line attached below Navbar (top-16) */}
+      <AnimatePresence>
+        {activeSection && (
+          <motion.div
+            key={activeSection.id}
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className={`sticky top-16 z-20 border-b transition-colors duration-300 shadow-xs ${
+              activeSection.theme === 'dark'
+                ? 'bg-[#151515] text-[#E8E7E2] border-[#2B2B28]'
+                : 'bg-[#E8E7E2] text-[#151515] border-[#B8BBB7]'
+            }`}
+          >
+            <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-2 flex items-center justify-between gap-4 text-xs font-mono">
+              <div className="flex items-center gap-2.5 truncate">
+                <span
+                  className={`tabular-nums font-semibold ${
+                    activeSection.theme === 'dark' ? 'text-[#D6FF3F]' : 'text-[#8D4936]'
+                  }`}
+                >
+                  {activeSection.index}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className={activeSection.theme === 'dark' ? 'text-[#898985]' : 'text-[#898985]'}
+                >
+                  /
+                </span>
+                <span
+                  className={`uppercase tracking-wider font-semibold ${
+                    activeSection.theme === 'dark' ? 'text-[#E8E7E2]' : 'text-[#151515]'
+                  }`}
+                >
+                  {activeSection.title}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className={`hidden sm:inline ${
+                    activeSection.theme === 'dark' ? 'text-[#898985]' : 'text-[#898985]'
+                  }`}
+                >
+                  —
+                </span>
+                <span
+                  className={`hidden sm:inline truncate ${
+                    activeSection.theme === 'dark' ? 'text-[#B8BBB7]' : 'text-[#151515]/75'
+                  }`}
+                >
+                  {activeSection.subtitle}
+                </span>
+              </div>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection('top');
+                }}
+                className={`text-[11px] uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 ${
+                  activeSection.theme === 'dark'
+                    ? 'text-[#898985] hover:text-[#D6FF3F]'
+                    : 'text-[#898985] hover:text-[#151515]'
+                }`}
+              >
+                Haut ↑
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <main className="flex-1">
         {/* 3. Hero du Drop 01 — Page-Load Entrance Animation */}
@@ -244,12 +431,20 @@ export default function App() {
                 <div className="flex flex-wrap items-center gap-3">
                   <a
                     href={DROP_CONTENT.drop.primaryCta.href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToSection('access');
+                    }}
                     className="px-6 py-3 text-xs font-mono uppercase tracking-wider bg-[#151515] text-[#E8E7E2] hover:bg-[#D6FF3F] hover:text-[#151515] transition-colors whitespace-nowrap shrink-0"
                   >
                     {DROP_CONTENT.drop.primaryCta.label}
                   </a>
                   <a
                     href={DROP_CONTENT.drop.secondaryCta.href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToSection('collection');
+                    }}
                     className="px-6 py-3 text-xs font-mono uppercase tracking-wider border border-[#151515] text-[#151515] hover:bg-[#151515] hover:text-[#E8E7E2] transition-colors whitespace-nowrap shrink-0"
                   >
                     {DROP_CONTENT.drop.secondaryCta.label}
@@ -285,10 +480,10 @@ export default function App() {
         {/* 4. Manifeste */}
         <section id="manifeste" className="border-b border-[#B8BBB7]">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.12 }}
-            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
@@ -308,9 +503,17 @@ export default function App() {
               </div>
 
               <div className="lg:col-span-7 divide-y divide-[#B8BBB7] border-t border-b border-[#B8BBB7]">
-                {DROP_CONTENT.brand.territory.map((item) => (
-                  <div
+                {DROP_CONTENT.brand.territory.map((item, idx) => (
+                  <motion.div
                     key={item.index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{
+                      duration: 0.5,
+                      delay: idx * 0.06,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
                     className="py-4 sm:py-5 grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-baseline"
                   >
                     <span className="sm:col-span-1 text-xs font-mono text-[#898985] tabular-nums">
@@ -322,20 +525,20 @@ export default function App() {
                     <p className="sm:col-span-7 text-sm text-[#151515]/80 leading-relaxed">
                       {item.detail}
                     </p>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
           </motion.div>
         </section>
 
-        {/* 5. Lookbook — Silhouettes & Cadrages */}
+        {/* 5. Lookbook — Interactive Carousel */}
         <section id="lookbook" className="border-b border-[#B8BBB7]">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.1 }}
-            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, amount: 0.12 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24"
           >
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
@@ -368,7 +571,10 @@ export default function App() {
                   <button
                     key={tab.key}
                     type="button"
-                    onClick={() => setLookbookFilter(tab.key)}
+                    onClick={() => {
+                      setLookbookFilter(tab.key);
+                      setLookbookIndex(0);
+                    }}
                     className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 ${
                       lookbookFilter === tab.key
                         ? 'bg-[#151515] text-[#D6FF3F]'
@@ -381,51 +587,20 @@ export default function App() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {filteredLookbook.map((frame) => (
-                <article
-                  key={frame.id}
-                  className="group border border-[#B8BBB7] bg-[#E8E7E2] flex flex-col justify-between"
-                >
-                  <div className="aspect-[3/4] w-full overflow-hidden bg-[#151515]">
-                    <EditorialImage
-                      src={frame.image}
-                      alt={frame.imageAlt}
-                      fallbackTitle={frame.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                    />
-                  </div>
-                  <div className="p-4 flex flex-col gap-3 border-t border-[#B8BBB7]">
-                    <div className="flex items-center justify-between text-xs font-mono text-[#898985]">
-                      <span className="tabular-nums">Look {frame.index}</span>
-                      <span>{frame.lighting}</span>
-                    </div>
-                    <h3 className="text-base font-semibold text-[#151515]">
-                      {frame.title}
-                    </h3>
-                    <p className="text-xs text-[#898985]">{frame.environment}</p>
-                    <button
-                      type="button"
-                      onClick={() => handleOpenProductById(frame.linkedProductId)}
-                      className="mt-1 inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[#151515] hover:text-[#8D4936] transition-colors self-start"
-                    >
-                      <span>Voir la pièce associée</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
+            <ContinuousLookbookCarousel
+              frames={filteredLookbook}
+              onOpenProduct={handleOpenProductById}
+            />
           </motion.div>
         </section>
 
         {/* 6. Produits — Drop 01 — Outside System */}
         <section id="collection" className="border-b border-[#B8BBB7]">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.1 }}
-            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, amount: 0.12 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24"
           >
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
@@ -527,10 +702,10 @@ export default function App() {
         {/* 7. Détails de construction & Système de tailles */}
         <section id="construction" className="bg-[#151515] text-[#E8E7E2] border-b border-[#2B2B28]">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.1 }}
-            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, amount: 0.12 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24"
           >
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
@@ -662,10 +837,10 @@ export default function App() {
         {/* 8. Accès anticipé */}
         <section id="access" className="border-b border-[#B8BBB7]">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.12 }}
-            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
@@ -810,6 +985,12 @@ export default function App() {
                 <a
                   key={link.label}
                   href={link.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (link.href) {
+                      scrollToSection(link.href.replace('#', ''));
+                    }
+                  }}
                   className="hover:text-[#8D4936] transition-colors"
                 >
                   {link.label}
