@@ -1,3 +1,9 @@
+import heroOutsideSystemImg from '../assets/images/hero_outside_system_1793971896524.jpg';
+import fieldHoodieImg from '../assets/images/product_field_hoodie_1793971898263.jpg';
+import layerShellImg from '../assets/images/product_layer_shell_1793971898025.jpg';
+import archiveTeeImg from '../assets/images/product_archive_tee_1793971897886.jpg';
+import signalCapImg from '../assets/images/product_signal_cap_1793971897971.jpg';
+
 export interface ProductItem {
   id: string;
   index: string;
@@ -71,7 +77,7 @@ export const DROP_CONTENT = {
     name: 'Drop 01 — Outside System',
     status: 'Collection de démonstration',
     launchDate: 'Date à confirmer',
-    heroImage: '/src/assets/images/hero_outside_system_1793971896524.jpg',
+    heroImage: heroOutsideSystemImg,
     heroImageAlt: 'Silhouettes HORS CHAMP Drop 01 — Outside System en mouvement sur parvis en béton',
     primaryCta: {
       label: 'Accéder au drop',
@@ -94,7 +100,7 @@ export const DROP_CONTENT = {
       silhouette: 'couche',
       environment: 'Asphalte humide · Paris 13e',
       lighting: 'Lumière froide naturelle',
-      image: '/src/assets/images/product_layer_shell_1793971898025.jpg',
+      image: layerShellImg,
       imageAlt: 'Silhouette portant la Layer Shell en mouvement sur trottoir parisien',
       linkedProductId: 'layer-shell',
     },
@@ -105,7 +111,7 @@ export const DROP_CONTENT = {
       silhouette: 'volume',
       environment: 'Béton brut · Acier galvanisé',
       lighting: 'Flash direct',
-      image: '/src/assets/images/product_field_hoodie_1793971898263.jpg',
+      image: fieldHoodieImg,
       imageAlt: 'Silhouette portant le Field Hoodie devant un mur en béton et acier',
       linkedProductId: 'field-hoodie',
     },
@@ -116,7 +122,7 @@ export const DROP_CONTENT = {
       silhouette: 'base',
       environment: 'Vestiaire · Métal perforé',
       lighting: 'Tube fluorescent froid',
-      image: '/src/assets/images/product_archive_tee_1793971897886.jpg',
+      image: archiveTeeImg,
       imageAlt: 'Silhouette portant l’Archive Tee dans un vestiaire en béton',
       linkedProductId: 'archive-tee',
     },
@@ -127,7 +133,7 @@ export const DROP_CONTENT = {
       silhouette: 'base',
       environment: 'Béton · Aluminium brossé',
       lighting: 'Lumière latérale rasante',
-      image: '/src/assets/images/product_signal_cap_1793971897971.jpg',
+      image: signalCapImg,
       imageAlt: 'Détail de la Signal Cap posée sur béton et aluminium brossé',
       linkedProductId: 'signal-cap',
     },
@@ -141,7 +147,7 @@ export const DROP_CONTENT = {
       layerRole: 'Couche 02 — Volume & Isolation',
       description: 'Hoodie oversize en coton lourd, lavé et structuré.',
       status: 'Produit de démonstration',
-      image: '/src/assets/images/product_field_hoodie_1793971898263.jpg',
+      image: fieldHoodieImg,
       imageAlt: 'Field Hoodie — Hoodie oversize en coton lourd lavé',
       constructionNotes: [
         'Coton lourd à tenue structurée, intérieur gratté dense',
@@ -159,7 +165,7 @@ export const DROP_CONTENT = {
       layerRole: 'Couche 03 — Protection extérieure',
       description: 'Une couche légère pensée pour protéger sans alourdir.',
       status: 'Produit de démonstration',
-      image: '/src/assets/images/product_layer_shell_1793971898025.jpg',
+      image: layerShellImg,
       imageAlt: 'Layer Shell — Veste légère de protection quotidienne',
       constructionNotes: [
         'Toile technique mate déperlante et coupe-vent',
@@ -177,7 +183,7 @@ export const DROP_CONTENT = {
       layerRole: 'Couche 01 — Base quotidienne',
       description: 'Un t-shirt ample, marqué par un imprimé discret.',
       status: 'Produit de démonstration',
-      image: '/src/assets/images/product_archive_tee_1793971897886.jpg',
+      image: archiveTeeImg,
       imageAlt: 'Archive Tee — T-shirt ample à imprimé discret',
       constructionNotes: [
         'Jersey de coton sec à grain visible et tombé net',
@@ -195,7 +201,7 @@ export const DROP_CONTENT = {
       layerRole: 'Équipement — Repère visuel',
       description: 'Une casquette souple avec un détail réfléchissant.',
       status: 'Produit de démonstration',
-      image: '/src/assets/images/product_signal_cap_1793971897971.jpg',
+      image: signalCapImg,
       imageAlt: 'Signal Cap — Casquette six panneaux avec détail réfléchissant',
       constructionNotes: [
         'Construction souple à six panneaux non structurés',
