@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { ArrowUpRight, Check, Menu, X } from 'lucide-react';
+import { MotionConfig, motion, useScroll, useSpring } from 'motion/react';
 import {
   DROP_CONTENT,
   type ProductItem,
@@ -27,6 +28,13 @@ export default function App() {
 
   // Footer info modal state
   const [infoModal, setInfoModal] = useState<InfoModalType>(null);
+
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 280,
+    damping: 32,
+    restDelta: 0.001,
+  });
 
   const filteredLookbook =
     lookbookFilter === 'all'
@@ -67,7 +75,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#E8E7E2] text-[#151515] flex flex-col">
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen bg-[#E8E7E2] text-[#151515] flex flex-col">
       {/* 1. Announcement Bar (static at top so mobile sticky height stays minimal) */}
       <div className="bg-[#151515] text-[#E8E7E2] border-b border-[#2B2B28]">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-2 flex flex-wrap items-center justify-between gap-2 text-xs font-mono tracking-wide">
@@ -149,11 +158,11 @@ export default function App() {
             className="md:hidden border-t border-[#B8BBB7] bg-[#E8E7E2] px-4 py-4 flex flex-col gap-3 text-sm font-medium"
           >
             <a
-              href="#collection"
+              href="#manifeste"
               onClick={() => setMobileMenuOpen(false)}
               className="py-2 border-b border-[#B8BBB7]/50 text-[#151515]"
             >
-              Collection
+              Manifeste
             </a>
             <a
               href="#lookbook"
@@ -163,11 +172,11 @@ export default function App() {
               Lookbook
             </a>
             <a
-              href="#manifeste"
+              href="#collection"
               onClick={() => setMobileMenuOpen(false)}
               className="py-2 border-b border-[#B8BBB7]/50 text-[#151515]"
             >
-              Manifeste
+              Collection
             </a>
             <a
               href="#construction"
@@ -178,14 +187,26 @@ export default function App() {
             </a>
           </nav>
         )}
+
+        {/* Compositor-only Scroll Progress Hairline */}
+        <motion.div
+          aria-hidden="true"
+          className="h-[2px] bg-[#151515] origin-left"
+          style={{ scaleX: smoothProgress }}
+        />
       </header>
 
       <main className="flex-1">
-        {/* 3. Hero du Drop 01 */}
+        {/* 3. Hero du Drop 01 — Page-Load Entrance Animation */}
         <section className="border-b border-[#B8BBB7]">
           <div className="max-w-[1360px] mx-auto px-4 sm:px-8 pt-10 pb-14 lg:pt-14 lg:pb-20">
             {/* Unboxed Metadata Line */}
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-mono text-[#898985] mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-mono text-[#898985] mb-6"
+            >
               <span className="text-[#151515] font-medium">{DROP_CONTENT.drop.code}</span>
               <span aria-hidden="true">/</span>
               <span>{DROP_CONTENT.drop.subtitle}</span>
@@ -193,20 +214,30 @@ export default function App() {
               <span>{DROP_CONTENT.drop.launchDate}</span>
               <span aria-hidden="true">·</span>
               <span>{DROP_CONTENT.drop.status}</span>
-            </div>
+            </motion.div>
 
             {/* Editorial Headline & Promise */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end mb-10">
-              <div className="lg:col-span-8">
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
+                className="lg:col-span-8"
+              >
                 <h1
                   className="font-display font-bold uppercase tracking-tight text-[#151515] leading-[0.94]"
                   style={{ fontSize: 'clamp(3rem, 6.5vw, 5.5rem)', textWrap: 'balance' }}
                 >
                   {DROP_CONTENT.drop.code} — {DROP_CONTENT.drop.subtitle}
                 </h1>
-              </div>
+              </motion.div>
 
-              <div className="lg:col-span-4 flex flex-col gap-6">
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+                className="lg:col-span-4 flex flex-col gap-6"
+              >
                 <p className="text-base sm:text-lg text-[#151515] leading-relaxed">
                   {DROP_CONTENT.brand.tagline}
                 </p>
@@ -224,11 +255,16 @@ export default function App() {
                     {DROP_CONTENT.drop.secondaryCta.label}
                   </a>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             {/* Dominant 16:9 Hero Visual */}
-            <figure className="relative overflow-hidden border border-[#B8BBB7] bg-[#151515]">
+            <motion.figure
+              initial={{ opacity: 0, scale: 1.02 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
+              className="relative overflow-hidden border border-[#B8BBB7] bg-[#151515]"
+            >
               <div className="aspect-video w-full overflow-hidden">
                 <EditorialImage
                   src={DROP_CONTENT.drop.heroImage}
@@ -242,13 +278,19 @@ export default function App() {
                 <span>Paris · Architecture brute &amp; silhouettes en mouvement</span>
                 <span>Visuel de direction artistique — {DROP_CONTENT.drop.status}</span>
               </figcaption>
-            </figure>
+            </motion.figure>
           </div>
         </section>
 
         {/* 4. Manifeste */}
         <section id="manifeste" className="border-b border-[#B8BBB7]">
-          <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.12 }}
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24"
+          >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
               <div className="lg:col-span-5">
                 <p className="text-xs font-mono uppercase tracking-wider text-[#898985] mb-3">
@@ -284,12 +326,18 @@ export default function App() {
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* 5. Lookbook — Silhouettes & Cadrages */}
         <section id="lookbook" className="border-b border-[#B8BBB7]">
-          <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24"
+          >
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
               <div>
                 <p className="text-xs font-mono uppercase tracking-wider text-[#898985] mb-3">
@@ -368,12 +416,18 @@ export default function App() {
                 </article>
               ))}
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* 6. Produits — Drop 01 — Outside System */}
         <section id="collection" className="border-b border-[#B8BBB7]">
-          <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24"
+          >
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
               <div>
                 <p className="text-xs font-mono uppercase tracking-wider text-[#898985] mb-3">
@@ -467,12 +521,18 @@ export default function App() {
                 </article>
               ))}
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* 7. Détails de construction & Système de tailles */}
         <section id="construction" className="bg-[#151515] text-[#E8E7E2] border-b border-[#2B2B28]">
-          <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24"
+          >
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
               <div>
                 <p className="text-xs font-mono uppercase tracking-wider text-[#898985] mb-3">
@@ -596,12 +656,18 @@ export default function App() {
               imageAlt={DROP_CONTENT.construction.systemOverviewAlt}
               hotspots={DROP_CONTENT.construction.systemHotspots}
             />
-          </div>
+          </motion.div>
         </section>
 
         {/* 8. Accès anticipé */}
         <section id="access" className="border-b border-[#B8BBB7]">
-          <div className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.12 }}
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-[1360px] mx-auto px-4 sm:px-8 py-16 lg:py-24"
+          >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
               <div className="lg:col-span-6">
                 <p className="text-xs font-mono uppercase tracking-wider text-[#898985] mb-3">
@@ -722,7 +788,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </section>
       </main>
 
@@ -936,6 +1002,7 @@ export default function App() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </MotionConfig>
   );
 }
