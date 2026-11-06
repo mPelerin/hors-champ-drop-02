@@ -639,7 +639,7 @@ export default function App() {
                     className="font-display font-bold uppercase tracking-tight text-[#151515] dark:text-[#E8E7E2] leading-[0.94]"
                     style={{ fontSize: 'clamp(3rem, 6.5vw, 5.5rem)', textWrap: 'balance' }}
                   >
-                    {content.drop.code} — {content.drop.subtitle}
+                    Designed for the outside.
                   </h1>
                 </motion.div>
 
