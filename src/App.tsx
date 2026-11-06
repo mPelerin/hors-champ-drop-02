@@ -96,10 +96,10 @@ export default function App() {
             className="hidden md:flex items-center gap-8 text-sm font-medium text-[#151515]"
           >
             <a
-              href="#collection"
+              href="#manifeste"
               className="hover:text-[#8D4936] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#151515]"
             >
-              Collection
+              Manifeste
             </a>
             <a
               href="#lookbook"
@@ -108,10 +108,10 @@ export default function App() {
               Lookbook
             </a>
             <a
-              href="#manifeste"
+              href="#collection"
               className="hover:text-[#8D4936] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#151515]"
             >
-              Manifeste
+              Collection
             </a>
             <a
               href="#construction"
