@@ -1389,7 +1389,7 @@ export default function App() {
               <div className="flex items-center justify-between gap-4 pb-4 border-b border-[#B8BBB7] dark:border-[#2B2B28]">
                 <h3 className="font-display text-2xl font-bold uppercase tracking-tight">
                   {infoModal === 'contact' && (language === 'fr' ? 'Contact — HORS CHAMP' : 'Contact — HORS CHAMP')}
-                  {infoModal === 'instagram' && 'Instagram — @horschamp.paris'}
+                  {infoModal === 'instagram' && 'RadioMeuh — La Yaute'}
                   {infoModal === 'legal' && (language === 'fr' ? 'Mentions légales' : 'Legal Notice')}
                   {infoModal === 'privacy' && (language === 'fr' ? 'Politique de confidentialité' : 'Privacy Policy')}
                 </h3>
@@ -1417,16 +1417,38 @@ export default function App() {
                   </>
                 )}
                 {infoModal === 'instagram' && (
-                  <>
-                    <p>
+                  <div className="flex flex-col gap-4">
+                    {/* Visual RadioMeuh Logo Card */}
+                    <div className="p-3 bg-white border border-[#B8BBB7] dark:border-[#2B2B28] flex items-center justify-center">
+                      <img
+                        src="/assets/aistudio/festival-hop-pop-hop-radio-meuh_1ac4b62a.webp"
+                        alt="Radio Meuh — radiomeuh.com"
+                        className="w-full max-h-32 object-contain"
+                      />
+                    </div>
+
+                    <p className="text-base font-medium text-[#151515] dark:text-[#E8E7E2]">
                       {language === 'fr'
-                        ? 'Archives visuelles, essais de matières et annonces du Drop 01 — Outside System.'
-                        : 'Visual archives, material experiments, and Drop 01 — Outside System announcements.'}
+                        ? 'Écoute plutôt la bonne musique de la Yaute sur la Radio Meuh'
+                        : 'Listen to genuine music and good vibes from Haute-Savoie on Radio Meuh'}
                     </p>
                     <p className="font-mono text-xs text-[#898985]">
-                      @horschamp.paris ({language === 'fr' ? 'Compte de démonstration' : 'Demonstration handle'})
+                      {language === 'fr'
+                        ? 'Web radio indépendante diffusée en continu depuis La Clusaz.'
+                        : 'Independent web radio streaming continuous music straight from La Clusaz.'}
                     </p>
-                  </>
+                    <div>
+                      <a
+                        href="https://www.radiomeuh.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-mono uppercase tracking-wider bg-[#151515] dark:bg-[#E8E7E2] text-[#E8E7E2] dark:text-[#151515] hover:bg-[#D6FF3F] dark:hover:bg-[#D6FF3F] hover:text-[#151515] dark:hover:text-[#151515] transition-colors"
+                      >
+                        <span>radiomeuh.com</span>
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  </div>
                 )}
                 {infoModal === 'legal' && (
                   <p>

@@ -335,7 +335,7 @@ export const DROP_CONTENT_FR = {
       { label: 'Manifeste', href: '#manifeste' },
       { label: 'Construction', href: '#construction' },
       { label: 'Contact', action: 'contact' as const },
-      { label: 'Instagram', action: 'instagram' as const },
+      { label: 'RadioMeuh', action: 'instagram' as const },
     ],
     legal: [
       { label: 'Mentions légales', action: 'legal' as const },
@@ -668,7 +668,7 @@ export const DROP_CONTENT_EN: typeof DROP_CONTENT_FR = {
       { label: 'Manifesto', href: '#manifeste' },
       { label: 'Construction', href: '#construction' },
       { label: 'Contact', action: 'contact' as const },
-      { label: 'Instagram', action: 'instagram' as const },
+      { label: 'RadioMeuh', action: 'instagram' as const },
     ],
     legal: [
       { label: 'Legal Notice', action: 'legal' as const },
