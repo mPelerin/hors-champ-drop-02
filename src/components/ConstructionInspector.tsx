@@ -18,12 +18,18 @@ interface ConstructionInspectorProps {
   image: string;
   imageAlt: string;
   hotspots: SystemHotspot[];
+  helperText?: string;
+  badgeText?: string;
+  placeholderText?: string;
 }
 
 export function ConstructionInspector({
   image,
   imageAlt,
   hotspots,
+  helperText = 'Survolez les points d’intérêt sur la silhouette pour inspecter chaque couche',
+  badgeText = '4 points actifs · Système complet',
+  placeholderText = 'Passez la souris sur un repère (01 à 04) pour afficher les détails techniques de la couche.',
 }: ConstructionInspectorProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(hotspots[0]?.id ?? null);
 
@@ -32,8 +38,8 @@ export function ConstructionInspector({
   return (
     <div className="mt-10 pt-10 border-t border-[#2B2B28]">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4 text-xs font-mono text-[#898985]">
-        <span>Survolez les points d’intérêt sur la silhouette pour inspecter chaque couche</span>
-        <span className="text-[#D6FF3F]">4 points actifs · Système complet</span>
+        <span>{helperText}</span>
+        <span className="text-[#D6FF3F]">{badgeText}</span>
       </div>
 
       <figure className="relative border border-[#2B2B28] bg-[#1B1B19] overflow-hidden">
@@ -124,7 +130,7 @@ export function ConstructionInspector({
             </div>
           ) : (
             <p className="text-xs font-mono text-[#898985]">
-              Passez la souris sur un repère (01 à 04) pour afficher les détails techniques de la couche.
+              {placeholderText}
             </p>
           )}
 

@@ -14,6 +14,14 @@ import { EditorialImage } from './EditorialImage';
 interface ContinuousLookbookCarouselProps {
   frames: LookbookFrame[];
   onOpenProduct: (productId: string) => void;
+  uiLabels?: {
+    paused?: string;
+    playing?: string;
+    expandTooltip?: string;
+    viewPiece?: string;
+    techSheet?: string;
+    close?: string;
+  };
 }
 
 interface CarouselCardProps {
@@ -22,6 +30,7 @@ interface CarouselCardProps {
   total: number;
   phase: MotionValue<number>;
   isCenter: boolean;
+  expandTooltip?: string;
   onCardClick: () => void;
 }
 
@@ -40,6 +49,7 @@ function CarouselCard({
   total,
   phase,
   isCenter,
+  expandTooltip = 'Agrandir',
   onCardClick,
 }: CarouselCardProps) {
   const x = useTransform(phase, (p) => {
@@ -79,8 +89,8 @@ function CarouselCard({
       <div
         className={`w-full h-full border flex flex-col justify-between overflow-hidden transition-colors duration-500 ${
           isCenter
-            ? 'border-[#151515] bg-[#151515] shadow-2xl'
-            : 'border-[#B8BBB7] bg-[#E8E7E2] hover:border-[#151515]'
+            ? 'border-[#151515] dark:border-[#D6FF3F] bg-[#151515] dark:bg-[#1B1B19] shadow-2xl'
+            : 'border-[#B8BBB7] dark:border-[#2B2B28] bg-[#E8E7E2] dark:bg-[#151515] hover:border-[#151515] dark:hover:border-[#B8BBB7]'
         }`}
       >
         <div className="relative flex-1 w-full overflow-hidden bg-[#151515]">
@@ -97,7 +107,7 @@ function CarouselCard({
 
           {isCenter && (
             <div className="absolute bottom-4 right-4 text-[11px] font-mono text-[#D6FF3F] bg-[#151515]/90 border border-[#D6FF3F] px-2.5 py-1 flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
-              <span>Cliquer pour agrandir</span>
+              <span>{expandTooltip}</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </div>
           )}
@@ -106,8 +116,8 @@ function CarouselCard({
         <div
           className={`p-4 sm:p-5 border-t transition-colors duration-500 ${
             isCenter
-              ? 'bg-[#151515] text-[#E8E7E2] border-[#2B2B28]'
-              : 'bg-[#E8E7E2] text-[#151515] border-[#B8BBB7]'
+              ? 'bg-[#151515] dark:bg-[#1B1B19] text-[#E8E7E2] border-[#2B2B28]'
+              : 'bg-[#E8E7E2] dark:bg-[#151515] text-[#151515] dark:text-[#E8E7E2] border-[#B8BBB7] dark:border-[#2B2B28]'
           }`}
         >
           <div className="flex items-center justify-between gap-2 text-xs font-mono">
@@ -118,7 +128,7 @@ function CarouselCard({
           </div>
           <h3
             className={`mt-1 font-display text-xl sm:text-2xl font-bold tracking-tight uppercase truncate ${
-              isCenter ? 'text-[#E8E7E2]' : 'text-[#151515]'
+              isCenter ? 'text-[#E8E7E2]' : 'text-[#151515] dark:text-[#E8E7E2]'
             }`}
           >
             {frame.title}
@@ -132,6 +142,7 @@ function CarouselCard({
 export function ContinuousLookbookCarousel({
   frames,
   onOpenProduct,
+  uiLabels,
 }: ContinuousLookbookCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -140,22 +151,19 @@ export function ContinuousLookbookCarousel({
   const phase = useMotionValue(0);
   const targetPhaseRef = useRef<number | null>(null);
 
-  // Reset phase when filter changes
   useEffect(() => {
     phase.set(0);
     targetPhaseRef.current = null;
     setActiveIndex(0);
   }, [frames.length, phase]);
 
-  // Continuous ultra-slow glide (0.125 cards/sec = ~8s per card)
   useAnimationFrame((_, delta) => {
     if (frames.length <= 1) return;
 
-    const dt = Math.min(delta, 50) / 1000; // cap delta to avoid jump after tab switch
+    const dt = Math.min(delta, 50) / 1000;
     let current = phase.get();
 
     if (targetPhaseRef.current !== null) {
-      // Smoothly ease toward clicked target
       const diff = targetPhaseRef.current - current;
       if (Math.abs(diff) < 0.005) {
         current = targetPhaseRef.current;
@@ -165,7 +173,6 @@ export function ContinuousLookbookCarousel({
       }
       phase.set(current);
     } else if (!isPaused && !selectedFrame) {
-      // Continuous slow forward glide
       current += dt * 0.13;
       phase.set(current);
     }
@@ -203,17 +210,19 @@ export function ContinuousLookbookCarousel({
       {/* Top Status & Controls */}
       <div className="flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
         <div className="flex items-center gap-3">
-          <span className="text-[#151515] font-semibold tabular-nums">
+          <span className="text-[#151515] dark:text-[#E8E7E2] font-semibold tabular-nums">
             0{activeIndex + 1} / 0{frames.length}
           </span>
-          <span aria-hidden="true" className="text-[#B8BBB7]">·</span>
+          <span aria-hidden="true" className="text-[#B8BBB7] dark:text-[#2B2B28]">·</span>
           <span className="text-[#898985] hidden sm:inline">
-            {isPaused ? 'Défilement suspendu au survol' : 'Défilement continu lent'}
+            {isPaused
+              ? uiLabels?.paused || 'Défilement suspendu au survol'
+              : uiLabels?.playing || 'Défilement continu lent'}
           </span>
           <button
             type="button"
             onClick={() => setIsPaused((prev) => !prev)}
-            aria-label={isPaused ? 'Reprendre le défilement' : 'Mettre en pause'}
+            aria-label={isPaused ? 'Play' : 'Pause'}
             className="p-1 hover:text-[#8D4936] text-[#898985] transition-colors"
           >
             {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
@@ -224,16 +233,16 @@ export function ContinuousLookbookCarousel({
           <button
             type="button"
             onClick={handlePrev}
-            aria-label="Silhouette précédente"
-            className="w-8 h-8 border border-[#B8BBB7] bg-[#E8E7E2] hover:bg-[#151515] hover:text-[#D6FF3F] hover:border-[#151515] transition-colors flex items-center justify-center text-[#151515]"
+            aria-label="Previous"
+            className="w-8 h-8 border border-[#B8BBB7] dark:border-[#2B2B28] bg-[#E8E7E2] dark:bg-[#1B1B19] hover:bg-[#151515] hover:text-[#D6FF3F] dark:hover:bg-[#D6FF3F] dark:hover:text-[#151515] hover:border-[#151515] dark:hover:border-[#D6FF3F] transition-colors flex items-center justify-center text-[#151515] dark:text-[#E8E7E2]"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             type="button"
             onClick={handleNext}
-            aria-label="Silhouette suivante"
-            className="w-8 h-8 border border-[#B8BBB7] bg-[#E8E7E2] hover:bg-[#151515] hover:text-[#D6FF3F] hover:border-[#151515] transition-colors flex items-center justify-center text-[#151515]"
+            aria-label="Next"
+            className="w-8 h-8 border border-[#B8BBB7] dark:border-[#2B2B28] bg-[#E8E7E2] dark:bg-[#1B1B19] hover:bg-[#151515] hover:text-[#D6FF3F] dark:hover:bg-[#D6FF3F] dark:hover:text-[#151515] hover:border-[#151515] dark:hover:border-[#D6FF3F] transition-colors flex items-center justify-center text-[#151515] dark:text-[#E8E7E2]"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -250,6 +259,7 @@ export function ContinuousLookbookCarousel({
             total={frames.length}
             phase={phase}
             isCenter={idx === activeIndex}
+            expandTooltip={uiLabels?.expandTooltip || 'Agrandir'}
             onCardClick={() => {
               if (idx === activeIndex) {
                 setSelectedFrame(frame);
@@ -270,11 +280,11 @@ export function ContinuousLookbookCarousel({
               key={frame.id}
               type="button"
               onClick={() => handleJumpTo(idx)}
-              aria-label={`Aller au look ${frame.index}`}
+              aria-label={`Look ${frame.index}`}
               className={`h-1.5 transition-all duration-300 ${
                 isCurrent
-                  ? 'w-10 bg-[#151515]'
-                  : 'w-3 bg-[#B8BBB7] hover:bg-[#898985]'
+                  ? 'w-10 bg-[#151515] dark:bg-[#D6FF3F]'
+                  : 'w-3 bg-[#B8BBB7] dark:bg-[#2B2B28] hover:bg-[#898985]'
               }`}
             />
           );
@@ -282,16 +292,16 @@ export function ContinuousLookbookCarousel({
       </div>
 
       {/* Active Silhouette Readout & Quick Product Action Bar */}
-      <div className="border border-[#B8BBB7] bg-[#E8E7E2] p-4 sm:px-6 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="border border-[#B8BBB7] dark:border-[#2B2B28] bg-[#E8E7E2] dark:bg-[#1B1B19] p-4 sm:px-6 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-[#898985]">
-            <span className="text-[#151515] font-semibold tabular-nums">
+            <span className="text-[#151515] dark:text-[#E8E7E2] font-semibold tabular-nums">
               {currentFrame.index}
             </span>
             <span aria-hidden="true">·</span>
             <span>{currentFrame.environment}</span>
           </div>
-          <p className="mt-1 text-sm font-semibold text-[#151515]">
+          <p className="mt-1 text-sm font-semibold text-[#151515] dark:text-[#E8E7E2]">
             {currentFrame.title}
           </p>
         </div>
@@ -299,9 +309,9 @@ export function ContinuousLookbookCarousel({
         <button
           type="button"
           onClick={() => onOpenProduct(currentFrame.linkedProductId)}
-          className="px-5 py-2.5 text-xs font-mono uppercase tracking-wider bg-[#151515] text-[#E8E7E2] hover:bg-[#D6FF3F] hover:text-[#151515] transition-colors inline-flex items-center gap-2 self-start sm:self-center whitespace-nowrap shrink-0"
+          className="px-5 py-2.5 text-xs font-mono uppercase tracking-wider bg-[#151515] dark:bg-[#E8E7E2] text-[#E8E7E2] dark:text-[#151515] hover:bg-[#D6FF3F] dark:hover:bg-[#D6FF3F] hover:text-[#151515] transition-colors inline-flex items-center gap-2 self-start sm:self-center whitespace-nowrap shrink-0"
         >
-          <span>Voir la pièce du système</span>
+          <span>{uiLabels?.viewPiece || 'Voir la pièce du système'}</span>
           <ArrowUpRight className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -353,14 +363,14 @@ export function ContinuousLookbookCarousel({
                     }}
                     className="px-4 py-2.5 text-xs font-mono uppercase tracking-wider bg-[#D6FF3F] text-[#151515] font-semibold hover:bg-[#E8E7E2] transition-colors"
                   >
-                    Fiche technique
+                    {uiLabels?.techSheet || 'Fiche technique'}
                   </button>
                   <button
                     type="button"
                     onClick={() => setSelectedFrame(null)}
                     className="px-4 py-2.5 text-xs font-mono uppercase tracking-wider border border-[#2B2B28] text-[#E8E7E2] hover:bg-[#222220] transition-colors"
                   >
-                    Fermer
+                    {uiLabels?.close || 'Fermer'}
                   </button>
                 </div>
               </div>
