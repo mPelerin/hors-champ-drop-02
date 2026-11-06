@@ -3,6 +3,8 @@ import fieldHoodieImg from '../assets/images/product_field_hoodie_1793971898263.
 import layerShellImg from '../assets/images/product_layer_shell_1793971898025.jpg';
 import archiveTeeImg from '../assets/images/product_archive_tee_1793971897886.jpg';
 import signalCapImg from '../assets/images/product_signal_cap_1793971897971.jpg';
+import systemOverviewImg from '../assets/images/construction_system_overview_1793974344077.jpg';
+import type { SystemHotspot } from '../components/ConstructionInspector';
 
 export interface ProductItem {
   id: string;
@@ -255,6 +257,51 @@ export const DROP_CONTENT = {
       { size: 'L', chestCm: 128, lengthCm: 73, shoulderCm: 60, fit: 'Oversize' },
       { size: 'XL', chestCm: 134, lengthCm: 76, shoulderCm: 63, fit: 'Oversize' },
     ] as SizeRow[],
+    systemOverviewImage: systemOverviewImg,
+    systemOverviewAlt: 'Silhouette complète HORS CHAMP Drop 01 — Outside System avec les 4 couches',
+    systemHotspots: [
+      {
+        id: 'spot-tee',
+        number: '01',
+        code: 'Couche 01',
+        pieceName: 'Archive Tee',
+        title: 'Jersey sec & coupe boxy ample',
+        description: 'T-shirt en coton craie lavé à grain sec, pensé comme première couche respirante au quotidien.',
+        x: 51,
+        y: 78,
+      },
+      {
+        id: 'spot-hoodie',
+        number: '02',
+        code: 'Couche 02',
+        pieceName: 'Field Hoodie',
+        title: 'Coton lourd lavé & patine carbone',
+        description: 'Hoodie oversize en molleton épais à lavage pigmentaire, offrant structure et isolation thermique.',
+        x: 52,
+        y: 41,
+      },
+      {
+        id: 'spot-shell',
+        number: '03',
+        code: 'Couche 03',
+        pieceName: 'Layer Shell',
+        title: 'Membrane ripstop déperlante & manches articulées',
+        description: 'Veste légère coupe-vent en toile technique mate, conçue pour protéger sans alourdir la silhouette.',
+        x: 41,
+        y: 44,
+      },
+      {
+        id: 'spot-signal',
+        number: '04',
+        code: 'Signal',
+        pieceName: 'Signal Cap',
+        title: 'Passant réfléchissant haute visibilité (#D6FF3F)',
+        description: 'Ruban réfléchissant jaune-lime intégré sur le côté de la casquette six panneaux en sergé de coton lavé.',
+        x: 47,
+        y: 12,
+        isSignal: true,
+      },
+    ] as SystemHotspot[],
   },
   access: {
     title: 'Le drop arrive bientôt.',

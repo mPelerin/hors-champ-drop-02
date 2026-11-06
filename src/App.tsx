@@ -5,6 +5,7 @@ import {
   type ProductItem,
 } from './data/content';
 import { EditorialImage } from './components/EditorialImage';
+import { ConstructionInspector } from './components/ConstructionInspector';
 
 type LookbookFilter = 'all' | 'couche' | 'volume' | 'base';
 type ProductFilter = 'all' | 'hauts' | 'accessoires';
@@ -588,6 +589,13 @@ export default function App() {
                 </table>
               </div>
             )}
+
+            {/* Single Unified Image with Interactive Hover Hotspots */}
+            <ConstructionInspector
+              image={DROP_CONTENT.construction.systemOverviewImage}
+              imageAlt={DROP_CONTENT.construction.systemOverviewAlt}
+              hotspots={DROP_CONTENT.construction.systemHotspots}
+            />
           </div>
         </section>
 
